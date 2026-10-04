@@ -1,0 +1,18 @@
+-- plugin/vet.lua — user command registration, autoloaded by nvim's
+-- runtimepath scanning when this plugin directory is on &rtp.
+-- NOTE: still requires the "agentdiff" lua module name on disk pending a
+-- pending `lua/agentdiff` -> `lua/vet` directory rename (blocked on shell access).
+
+if vim.g.loaded_vet then
+  return
+end
+vim.g.loaded_vet = true
+
+vim.api.nvim_create_user_command("VetDispatch", function(cmd_opts)
+  local vet = require("vet")
+  vet.dispatch(cmd_opts.args)
+end, {
+  nargs = "+",
+  desc = "Dispatch an instruction to the configured AI agent for the current buffer, then review the diff (vet.nvim)",
+})
+
