@@ -46,6 +46,36 @@ Any CLI that edits the target file in place and exits works — the plugin
 doesn't care what produced the change, only what changed. This keeps it
 agent-agnostic, matching the "swap the backend freely" design goal.
 
+### GitHub Copilot CLI
+
+A built-in preset wires up the [GitHub Copilot CLI](https://docs.github.com/copilot/how-tos/use-copilot-agents/use-copilot-cli)
+(`copilot -p ...` non-interactive mode):
+
+```lua
+require("vet").setup({
+  cmd_template = require("vet").agents.copilot(),
+})
+```
+
+Optional settings:
+
+```lua
+require("vet").setup({
+  cmd_template = require("vet").agents.copilot({
+    bin = "copilot",              -- executable name/path (default: "copilot")
+    model = "claude-sonnet-4.5",  -- passed via --model
+    reasoning_effort = "high",    -- passed via --reasoning-effort
+    extra_args = { "--log-level", "error" },
+  }),
+})
+```
+
+Under the hood this runs `copilot -p "<prompt>" --allow-all-tools
+--allow-all-paths --silent`, which is required for Copilot to edit files
+without interactive confirmation prompts. The prompt is prefixed with an
+instruction scoping the edit to the dispatched file, so vet.nvim's
+single-file diff/review model stays accurate.
+
 ## Verified behavior (automated test)
 
 `test_poc.lua` drives neovim headlessly and asserts both outcomes:

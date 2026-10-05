@@ -23,6 +23,52 @@ M.config = {
 M._pending = {}
 M._next_id = 1
 
+-- Built-in cmd_template presets for specific agent CLIs.
+M.agents = {}
+
+--- Build a cmd_template that drives the GitHub Copilot CLI
+-- (https://docs.github.com/copilot/how-tos/use-copilot-agents/use-copilot-cli)
+-- in non-interactive mode. Copilot edits the target file in place and exits,
+-- which is exactly what vet.nvim's snapshot/diff/review loop expects.
+--
+-- opts (all optional):
+--   bin            - copilot executable name/path (default: "copilot")
+--   model          - model to pass via --model
+--   reasoning_effort - value to pass via --reasoning-effort
+--   extra_args     - list of additional argv entries appended to the command
+function M.agents.copilot(opts)
+  opts = opts or {}
+  local bin = opts.bin or "copilot"
+
+  return function(prompt, filepath)
+    local full_prompt = string.format(
+      "Only edit the file %s. %s",
+      filepath,
+      prompt
+    )
+
+    local cmd = {
+      bin,
+      "-p", full_prompt,
+      "--allow-all-tools",
+      "--allow-all-paths",
+      "--silent",
+    }
+
+    if opts.model then
+      vim.list_extend(cmd, { "--model", opts.model })
+    end
+    if opts.reasoning_effort then
+      vim.list_extend(cmd, { "--reasoning-effort", opts.reasoning_effort })
+    end
+    if opts.extra_args then
+      vim.list_extend(cmd, opts.extra_args)
+    end
+
+    return cmd
+  end
+end
+
 function M.setup(opts)
   M.config = vim.tbl_deep_extend("force", M.config, opts or {})
 end
