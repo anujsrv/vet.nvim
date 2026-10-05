@@ -34,7 +34,7 @@ nvim calc.py
 Replace the default `cmd_template` in your config:
 
 ```lua
-require("agentdiff").setup({ -- module name will become require("vet") after the pending rename
+require("vet").setup({
   cmd_template = function(prompt, filepath)
     -- Example: aider, non-interactive, auto-commit disabled (we handle accept/reject ourselves)
     return { "aider", "--no-auto-commits", "--yes", "--message", prompt, filepath }

@@ -1,7 +1,6 @@
 -- plugin/vet.lua — user command registration, autoloaded by nvim's
 -- runtimepath scanning when this plugin directory is on &rtp.
--- NOTE: still requires the "agentdiff" lua module name on disk pending a
--- pending `lua/agentdiff` -> `lua/vet` directory rename (blocked on shell access).
+-- NOTE: still requires the "vet.nvim" lua module name on disk pending a
 
 if vim.g.loaded_vet then
   return
